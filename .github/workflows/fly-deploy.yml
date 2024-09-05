@@ -2,9 +2,11 @@
 
 name: Fly Deploy
 on:
+  workflow_dispatch:  # Manuel tetikleme için
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'  # Sadece v ile başlayan etiketlerde çalışır
+
 jobs:
   deploy:
     name: Deploy app
