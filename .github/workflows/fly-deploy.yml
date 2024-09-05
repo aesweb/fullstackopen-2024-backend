@@ -2,16 +2,16 @@
 
 name: Fly Deploy
 on:
-  workflow_dispatch:  # Manuel tetikleme için
+  workflow_dispatch: # For manuel
   push:
     tags:
-      - 'v*'  # Sadece v ile başlayan etiketlerde çalışır
+      - 'v*' # only run when commit starts v
 
 jobs:
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
-    concurrency: deploy-group    # optional: ensure only one action runs at a time
+    concurrency: deploy-group # optional: ensure only one action runs at a time
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master

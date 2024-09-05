@@ -53,9 +53,13 @@ app.get('/api/persons/:id', (request, response, next) => {
 });
 
 app.delete('/api/persons/:id', (request, response, next) => {
-  Person.findByIdAndRemove(request.params.id)
-    .then(() => {
-      response.status(204).end();
+  Person.findByIdAndDelete(request.params.id)
+    .then((deletedPerson) => {
+      if (deletedPerson) {
+        response.status(204).end();
+      } else {
+        response.status(404).json({ error: 'Person not found' });
+      }
     })
     .catch((error) => next(error));
 });
@@ -77,6 +81,30 @@ app.post('/api/persons', (request, response, next) => {
     .catch((error) => next(error));
 });
 
+app.put('/api/persons/:id', (request, response, next) => {
+  const { name, number } = request.body;
+
+  const person = {
+    name: name,
+    number: number,
+  };
+
+  Person.findByIdAndUpdate(request.params.id, person, {
+    new: true,
+    runValidators: true,
+    context: 'query',
+  })
+    .then((updatedPerson) => {
+      if (updatedPerson) {
+        response.json(updatedPerson);
+      } else {
+        response.status(404).json({ error: 'Person not found' });
+      }
+    })
+    .catch((error) => next(error));
+});
+
+// New error handler middleware
 const errorHandler = (error, request, response, next) => {
   console.error(error.message);
 
@@ -89,6 +117,7 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
+// This has to be the last loaded middleware.
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
